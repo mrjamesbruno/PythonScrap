@@ -1,3 +1,4 @@
+﻿# -*- coding: utf-8 -*-
 import requests
 import urllib.request
 from urllib.request import Request, urlopen
@@ -72,18 +73,12 @@ for link in all_links:
 	    print(artikul)
 	    
 	    all_products.append({
-	        "name": name,
-	        "description": description,
-	        "price": price,
-	        "artikul": artikul
+	        "Артикул": artikul,
+	        "Название (RU)": name,
+	        "Цена": price,
+	        "Описание товара (RU)": description
 	        #"image": image
 	    })
-	    #image = product.select('img')[0].get('src')
-	    #print(len(product.select('img')),image)
-	    #for images in product.select('img'):
-		    #print(images.get('src'))
-	
-	#productImages = soup.select('div.pswp__zoom-wrap')
 	
 	img_tags = soup.find_all('img')
 	urls = [img['src'] for img in img_tags]
@@ -95,32 +90,32 @@ for link in all_links:
 		    #print("Regex didn't match with the url: {}".format(url))
 		    continue
 		#print(filename.group(1))
-		with open(filename.group(1), 'wb') as f:
-		    x = url.split("/")
-		    x1 = x[len(x)-1]
-		    #print("artikul i x1: ", artikul, x1)
-		    if artikul in x1:
-			    #print("artikul in x1 >>>>>>>>>>>>>>")
-			    urlWithoutIMG = glueURL(x)
-			    #imya sohranyaemogo fila
-			    imgName = artikul+"@"+str(indexOfImg)+".jpg"
-			    #print("imgName: ",imgName)
-			    #sdelat pravilnyi webadres kartinki
-			    xName0 = x1.split("-")
-			    #print("xName0: ",xName0[0])
-			    xName = getImgUrl(xName0)
-			    #print("xName: ",xName)
-			    #udalyaem imya img i zamenyaem vernym xName
-			    url = urlWithoutIMG+str(xName)
-			    print("url: ",url)
-			    try:
-				    opener = urllib.request.build_opener()
-				    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-				    urllib.request.install_opener(opener)
-				    urllib.request.urlretrieve(url, "IMG\\"+imgName)
-			    except:
-			    	print("!!! ERROR: Ne mogu skachat kartinky! >>>> ", url)
-			    indexOfImg +=1
+		#with open(filename.group(1), 'wb') as f:
+		x = url.split("/")
+		x1 = x[len(x)-1]
+		#print("artikul i x1: ", artikul, x1)
+		if artikul in x1:
+		    #print("artikul in x1 >>>>>>>>>>>>>>")
+		    urlWithoutIMG = glueURL(x)
+		    #imya sohranyaemogo fila
+		    imgName = artikul+"@"+str(indexOfImg)+".jpg"
+		    #print("imgName: ",imgName)
+		    #sdelat pravilnyi webadres kartinki
+		    xName0 = x1.split("-")
+		    #print("xName0: ",xName0[0])
+		    xName = getImgUrl(xName0)
+		    #print("xName: ",xName)
+		    #udalyaem imya img i zamenyaem vernym xName
+		    url = urlWithoutIMG+str(xName)
+		    print("url: ",url)
+		    try:
+			    opener = urllib.request.build_opener()
+			    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+			    urllib.request.install_opener(opener)
+			    urllib.request.urlretrieve(url, "IMG\\"+imgName)
+		    except:
+		    	print("!!! ERROR: Ne mogu skachat kartinky! >>>> ", url)
+		    indexOfImg +=1
 	
 	#breakpoint()
 

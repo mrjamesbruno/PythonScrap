@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 import urllib.request
 from urllib.request import Request, urlopen
@@ -72,18 +73,12 @@ for link in all_links:
 	    print(artikul)
 	    
 	    all_products.append({
-	        "name": name,
-	        "description": description,
-	        "price": price,
-	        "artikul": artikul
+	        "Артикул": artikul,
+	        "Название (RU)": name,
+	        "Цена": price,
+	        "Описание товара (RU)": description
 	        #"image": image
 	    })
-	    #image = product.select('img')[0].get('src')
-	    #print(len(product.select('img')),image)
-	    #for images in product.select('img'):
-		    #print(images.get('src'))
-	
-	#productImages = soup.select('div.pswp__zoom-wrap')
 	
 	img_tags = soup.find_all('img')
 	urls = [img['src'] for img in img_tags]

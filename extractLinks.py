@@ -5,10 +5,13 @@ import time
 from bs4 import BeautifulSoup
 import csv
 import pdb
+import re
 
 all_products = []
 all_links = []
-req = Request('https://brig-motors.com/product-category/vodnolyzhnoje-snaryazhenije/zhilety/', headers={'User-Agent': 'Mozilla/5.0'})
+artikul = "000"
+indexOfImg = 1
+req = Request('https://brig-motors.com/product-category/vodnolyzhnoje-snaryazhenije/zhilety/page/2/', headers={'User-Agent': 'Mozilla/5.0'})
 webpage = urlopen(req).read()
 soup = BeautifulSoup(webpage, 'html.parser')
 
@@ -26,8 +29,30 @@ f = open("links.txt", "r")
 for x in f:
   print(x)
 """
+def getImgUrl(imageName):
+	#print("getImgUrl: ", len(imageName),imageName[0])
+	rightName = ''
+	imageName = imageName[:-1]
+	#print("getImgUrl2: ", len(imageName),imageName[0])
+	for y in imageName:
+		#print(y)
+		rightName += y+"-"
+	return rightName[:-1]+".jpg"
+
+def glueURL(url0):
+	urlBack = ''
+	#print("glueURL: ", len(url0),url0[0])
+	url0 = url0[:-1]
+	#del record[-1]
+	#print("glueURL2: ", len(url0),url0[0])
+	for y in url0:
+		urlBack += y+"/"
+	#print("glueURL: urlBack: ", urlBack)
+	return str(urlBack)
+
 for link in all_links:
-	print(link)
+	indexOfImg = 1
+	#print(link)
 	req = Request(link, headers={'User-Agent': 'Mozilla/5.0'})
 	webpage = urlopen(req).read()
 	soup = BeautifulSoup(webpage, 'html.parser')
@@ -45,16 +70,59 @@ for link in all_links:
 	    print(price)
 	    artikul = product.select('span.sku')[0].text.strip()
 	    print(artikul)
-	    image = product.select('img')[0].get('src')
-	    print(image)
 	    
 	    all_products.append({
 	        "name": name,
 	        "description": description,
 	        "price": price,
-	        "artikul": artikul,
-	        "image": image
+	        "artikul": artikul
+	        #"image": image
 	    })
+	    #image = product.select('img')[0].get('src')
+	    #print(len(product.select('img')),image)
+	    #for images in product.select('img'):
+		    #print(images.get('src'))
+	
+	#productImages = soup.select('div.pswp__zoom-wrap')
+	
+	img_tags = soup.find_all('img')
+	urls = [img['src'] for img in img_tags]
+	print("found img: ",len(urls))
+	for url in urls:
+		#print(url)
+		filename = re.search(r'/([\w_-]+[.](jpg|gif|png))$', url)
+		if not filename:
+		    #print("Regex didn't match with the url: {}".format(url))
+		    continue
+		#print(filename.group(1))
+		with open(filename.group(1), 'wb') as f:
+		    x = url.split("/")
+		    x1 = x[len(x)-1]
+		    #print("artikul i x1: ", artikul, x1)
+		    if artikul in x1:
+			    #print("artikul in x1 >>>>>>>>>>>>>>")
+			    urlWithoutIMG = glueURL(x)
+			    #imya sohranyaemogo fila
+			    imgName = artikul+"@"+str(indexOfImg)+".jpg"
+			    #print("imgName: ",imgName)
+			    #sdelat pravilnyi webadres kartinki
+			    xName0 = x1.split("-")
+			    #print("xName0: ",xName0[0])
+			    xName = getImgUrl(xName0)
+			    #print("xName: ",xName)
+			    #udalyaem imya img i zamenyaem vernym xName
+			    url = urlWithoutIMG+str(xName)
+			    print("url: ",url)
+			    try:
+				    opener = urllib.request.build_opener()
+				    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+				    urllib.request.install_opener(opener)
+				    urllib.request.urlretrieve(url, "IMG\\"+imgName)
+			    except:
+			    	print("!!! ERROR: Ne mogu skachat kartinky! >>>> ", url)
+			    indexOfImg +=1
+	
+	#breakpoint()
 
 keys = all_products[0].keys()
 

@@ -1,1 +1,1 @@
-pyinstaller parser.py -F --onefile
+pyinstaller parserV4.py -F --onefile
